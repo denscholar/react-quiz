@@ -2,18 +2,23 @@ import React, { useEffect, useReducer } from 'react'
 import Header from './components/Header'
 import Loader from './components/Loader'
 import Error from './components/Error'
+import Progress from './components/Progress'
 import Main2 from './Main2'
 import { INITIAL_STATE, questionReducer } from './reducers/QuestionReducer'
 import StartScreen from './screens/StartScreen'
 import Questions from './components/Questions'
+import NextButton from './components/NextButton'
+import FinishedScreen from './screens/FinishedScreen'
 
 
 
 
 const App = () => {
-  const [{ questions, status, index }, dispatch] = useReducer(questionReducer, INITIAL_STATE)
+  const [{ questions, status, index, answer, points }, dispatch] = useReducer(questionReducer, INITIAL_STATE)
 
   const numQuestions = questions.length;
+  const maxPoints = questions.reduce((prev, cur) => prev + cur.points, 0)
+
   useEffect(() => {
     fetch("http://localhost:8000/questions")
       .then((res) => res.json())
@@ -25,12 +30,19 @@ const App = () => {
   return (
     <div className='app'>
       <Header />
-
       <Main2 className="main">
         {status === 'loading' && <Loader />}
         {status === 'error' && <Error />}
         {status === 'ready' && <StartScreen numQuestions={numQuestions} dispatch={dispatch} />}
-        {status === 'active' && <Questions question={questions[index]} />}
+        {status === 'active' && (
+          <>
+            <Progress index={index} numQuestions={numQuestions} points={points} maxPoints={maxPoints} answer={answer} />
+            <Questions question={questions[index]} dispatch={dispatch} answer={answer} />
+          </>
+        )
+        }
+        <NextButton dispatch={dispatch} answer={answer} />
+        {status === 'FINISHED' && <FinishedScreen points={points} maxPoints={maxPoints} />}
       </Main2>
 
     </div>

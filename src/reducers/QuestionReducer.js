@@ -5,6 +5,7 @@ export const INITIAL_STATE = {
   index: 0,
   answer: null,
   points: 0,
+  secondsRemaining: 10,
 };
 
 export const questionReducer = (state, action) => {
@@ -34,9 +35,18 @@ export const questionReducer = (state, action) => {
       return { ...state, index: state.index + 1, answer: null };
 
     case "FINISHED":
-      return { ...state, index: state.index + 1, answer: null };
+      return { ...state, status: "finished", index: state.index + 1 };
+
+    case "RESTART":
+      return { ...state, status: "ready", index: 0, answer: null };
+    case "TICK":
+      return {
+        ...state,
+        secondsRemaining: state.secondsRemaining - 1,
+        status: state.secondsRemaining === 0 ? "finished" : state.status,
+      };
 
     default:
-      break;
+      return state;
   }
 };

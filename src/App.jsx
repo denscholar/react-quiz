@@ -9,12 +9,17 @@ import StartScreen from './screens/StartScreen'
 import Questions from './components/Questions'
 import NextButton from './components/NextButton'
 import FinishedScreen from './screens/FinishedScreen'
+import Footer from './components/Footer'
+import Timer from './components/Timer'
 
 
 
 
 const App = () => {
-  const [{ questions, status, index, answer, points }, dispatch] = useReducer(questionReducer, INITIAL_STATE)
+  const [{ questions, status, index, answer, points, secondsRemaining }, dispatch] = useReducer(questionReducer, INITIAL_STATE)
+
+
+  
 
   const numQuestions = questions.length;
   const maxPoints = questions.reduce((prev, cur) => prev + cur.points, 0)
@@ -41,8 +46,19 @@ const App = () => {
           </>
         )
         }
-        <NextButton dispatch={dispatch} answer={answer} />
-        {status === 'FINISHED' && <FinishedScreen points={points} maxPoints={maxPoints} />}
+        {status === 'finished' && (<FinishedScreen dispatch={dispatch} points={points} maxPoints={maxPoints} />)}
+        <Footer>
+          <Timer
+            dispatch={dispatch}
+            secondsRemaining={secondsRemaining}
+          />
+          <NextButton
+            dispatch={dispatch}
+            answer={answer}
+            index={index}
+            numQuestions={numQuestions}
+          />
+        </Footer>
       </Main2>
 
     </div>
